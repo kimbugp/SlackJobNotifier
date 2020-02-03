@@ -2,7 +2,6 @@ import json
 import os
 import time
 import uuid
-from itertools import filterfalse
 
 import boto3
 import botocore
@@ -44,7 +43,6 @@ def lambda_handler(event, context):
 
 def get_new_jobs(prev_jobs, jobs):
     prev_jobs_ids = [job["id"] for job in prev_jobs]
-    filterfalse()
     return [job for job in jobs if job["id"] not in prev_jobs_ids]
 
 
