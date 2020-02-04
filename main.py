@@ -37,8 +37,9 @@ def lambda_handler(event, context):
 
     if new_jobs:
         # slack handler
+        webhooks = get_webhooks(connection, bucket)
         slack = SlackHelper()
-        res = slack.post_message(new_jobs, meta)
+        res = slack.post_message(new_jobs, meta, webhooks)
         copy_to_bucket(bucket, jobs_date_key, jobs, connection)
     print('None found')
     return
@@ -58,10 +59,10 @@ def previous_data(connection, bucket, key):
     return json.loads(obj)
 
 
-def get_data(bucket_name, key, items, s3):
-    obj = s3.get_object(Bucket=bucket_name, key=key)
-    serializedObject = obj["Body"].read()
-    return json.loads(serializedObject)
+def get_data(bucket_name, key, connection):
+    bucker_instance = connection.Object(bucket_name, key)
+    serializedObject = bucker_instance.get()["Body"].read()
+    return serializedObject.decode('utf-8')
 
 
 def create_bucket_name(bucket_prefix):
@@ -101,16 +102,22 @@ def get_jobs_list():
     return json_data.get("jobs"), json_data.get("meta")
 
 
+def get_webhooks(connection, bucket):
+    key = 'subscribers'
+    data = '[{}]'.format(get_data(bucket, key, connection))
+    data = json.loads(data)
+    return [hook['url'] for hook in data]
+
+
 class SlackHelper:
 
-    def __init__(self):
-        self.web_hook = SLACK_WEBHOOK
-
-    def post_message(self, jobs, meta):
-        return requests.post(self.web_hook,
-                             json=self.create_slack_message(jobs, meta),
-                             headers={"Content-Type": "application/json"}
-                             )
+    def post_message(self, jobs, meta, webhooks):
+        responses = []
+        for web_hook in webhooks:
+            res = requests.post(web_hook, json=self.create_slack_message(
+                jobs, meta), headers={"Content-Type": "application/json"})
+            responses.append(res)
+        return responses
 
     @staticmethod
     def create_slack_message(jobs, meta):
@@ -121,3 +128,6 @@ class SlackHelper:
         message = """{{"blocks": [{{"type": "section","text": {{"type": "mrkdwn","text": "@channel We found {total} new jobs"}}}},{{"type": "divider"}},{job_string}]}}""".format(
             job_string=jobs_string, **meta)
         return json.loads(message)
+
+
+lambda_handler('NOne', 'NOne')
