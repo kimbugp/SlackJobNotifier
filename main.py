@@ -5,7 +5,7 @@ import uuid
 
 import boto3
 import botocore
-import package.requests
+import requests
 
 URL = "https://boards-api.greenhouse.io/v1/boards/partnerengagementstaffing/jobs"
 ACCESS_ID = os.environ.get("ACCESS_KEY_ID")
