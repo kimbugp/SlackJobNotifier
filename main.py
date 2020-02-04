@@ -1,11 +1,14 @@
 import json
 import os
+import sys
 import time
 import uuid
 
+sys.path.append('package')  # noqa
+import requests
+
 import boto3
 import botocore
-import requests
 
 URL = "https://boards-api.greenhouse.io/v1/boards/partnerengagementstaffing/jobs"
 ACCESS_ID = os.environ.get("ACCESS_KEY_ID")
