@@ -115,6 +115,6 @@ class SlackHelper:
         job_str = """{{"type": "section","text": {{"type": "mrkdwn","text": "*<{absolute_url}|{title}>*\\nCreated at: {updated_at}\\nLocation:{location[name]}\\nRequistion Id: {requisition_id}\\nInternal Job Id: {internal_job_id}"}},"accessory":{{"type": "image","image_url": "{image_url}","alt_text": "{title}"}}}},{{"type": "divider"}}"""
         jobs_string = ",".join(job_str.format(
             image_url=image_url, **job) for job in jobs)
-        message = """{{"blocks": [{{"type": "section","text": {{"type": "mrkdwn","text": "We found {total} new jobs"}}}},{{"type": "divider"}},{job_string}]}}""".format(
+        message = """{{"blocks": [{{"type": "section","text": {{"type": "mrkdwn","text": "@channel We found {total} new jobs"}}}},{{"type": "divider"}},{job_string}]}}""".format(
             job_string=jobs_string, **meta)
         return json.loads(message)
