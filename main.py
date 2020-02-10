@@ -128,6 +128,3 @@ class SlackHelper:
         message = """{{"blocks": [{{"type": "section","text": {{"type": "mrkdwn","text": "@channel We found {total} new jobs"}}}},{{"type": "divider"}},{job_string}]}}""".format(
             job_string=jobs_string, **meta)
         return json.loads(message)
-
-
-lambda_handler('NOne', 'NOne')
